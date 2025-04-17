@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="java-library-template [publishMavenJavaPublicationToMavenLocal]" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="markdown-slugger [clean publishMavenJavaPublicationToMavenLocal publish]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,14 +10,17 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value="clean" />
           <option value="publishMavenJavaPublicationToMavenLocal" />
+          <option value="publish" />
         </list>
       </option>
-      <option name="vmOptions" value="" />
+      <option name="vmOptions" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
     <DebugAllEnabled>false</DebugAllEnabled>
+    <ForceTestExec>false</ForceTestExec>
     <method v="2" />
   </configuration>
 </component>
