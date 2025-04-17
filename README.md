@@ -13,7 +13,7 @@
 
 # markdown-slugger
 
-**markdown-slugger** is a lightweight and extensible Java library for processing Markdown files.  
+**markdown-slugger** is a lightweight and extensible Java library for processing Markdown files.
 It extracts headings, generates URL-friendly slugs, builds nested Tables of Contents (TOC), and injects anchor IDs for compatibility with tools like Pandoc and EPUB.
 
 The current version includes core functionality with packages:
@@ -27,7 +27,7 @@ More features (e.g. file I/O, CLI, HTML export) will come in future releases.
 
 ---
 
-> 💡 Please support this project by giving it a GitHub star ⭐  
+> 💡 Please support this project by giving it a GitHub star ⭐
 > Share it with your friends and colleagues — every bit helps!
 
 ---
