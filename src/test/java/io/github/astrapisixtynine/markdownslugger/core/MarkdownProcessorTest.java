@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,7 +164,7 @@ class MarkdownProcessorTest
 	 *             if file reading fails
 	 */
 	@Test
-	@Disabled("test with your md file and enable this test case")
+//	@Disabled("test with your md file and enable this test case")
 	void testWithSpecificMarkdownFile() throws Exception
 	{
 		Path mdFilePath = Paths.get("src/test/resources/ia_pour_tous_livre.gfm");
@@ -171,7 +172,14 @@ class MarkdownProcessorTest
 
 		MarkdownContext context = new MarkdownContext();
 		context.originalContent = Files.readString(mdFilePath);
-		SlugifyConfig config = new SlugifyConfig(Map.of(), // replacements
+		Map<String, String> replacements = new HashMap<>();
+		replacements.put("?", "");
+		replacements.put("❖", "");
+		replacements.put(":", "");
+		replacements.put("’", "");
+		replacements.put("▷", "");
+		replacements.put(".", "");
+		SlugifyConfig config = new SlugifyConfig(replacements, // replacements
 			true, // toLowerCase
 			false, // stripNonAlphanumeric
 			"-", // whitespaceReplacement
