@@ -44,15 +44,15 @@ public class TocGenerator implements MarkdownProcessingStep
 	public void process(MarkdownContext context)
 	{
 		StringBuilder tocBuilder = new StringBuilder();
-		for (int i = 0; i < context.headings.size(); i++)
+		for (int i = 0; i < context.getHeadings().size(); i++)
 		{
-			String heading = context.headings.get(i);
-			String slug = context.slugs.get(i);
-			int level = context.headingLevels.get(i);
+			String heading = context.getHeadings().get(i);
+			String slug = context.getSlugs().get(i);
+			int level = context.getHeadingLevels().get(i);
 			String indent = "  ".repeat(Math.max(0, level - 1));
 			tocBuilder.append(indent).append("- [").append(heading).append("](#").append(slug)
 				.append(")\n");
 		}
-		context.toc = tocBuilder.toString();
+		context.setToc(tocBuilder.toString());
 	}
 }

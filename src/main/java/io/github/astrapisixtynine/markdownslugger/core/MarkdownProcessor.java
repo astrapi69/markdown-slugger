@@ -32,22 +32,29 @@ import io.github.astrapisixtynine.markdownslugger.pipeline.HeadingExtractor;
 import io.github.astrapisixtynine.markdownslugger.pipeline.TocGenerator;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugMapper;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugStrategy;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 /**
- * MarkdownProcessor executes a pipeline of MarkdownProcessingStep instances Each step modifies or
- * enriches the provided MarkdownContext
+ * MarkdownProcessor executes a pipeline of MarkdownProcessingStep instances
  *
- * This processor can be used to extract headings, generate slugs, create a TOC, inject anchor IDs,
- * and more
+ * Each step modifies or enriches the provided MarkdownContext
  */
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MarkdownProcessor
 {
+
 	/**
-	 * The ordered list of processing steps that make up the pipeline Each step operates on the
-	 * MarkdownContext and may modify or enrich it
+	 * The ordered list of processing steps that make up the pipeline
 	 */
-	private final List<MarkdownProcessingStep> steps = new ArrayList<>();
+	@Singular
+	private List<MarkdownProcessingStep> steps;
 
 	/**
 	 * Adds a new processing step to the Markdown pipeline
@@ -77,8 +84,7 @@ public class MarkdownProcessor
 	}
 
 	/**
-	 * Creates a default pipeline of steps using the provided SlugStrategy Includes heading
-	 * extraction, slug mapping, TOC generation, and anchor injection
+	 * Creates a default pipeline of steps using the provided SlugStrategy
 	 *
 	 * @param slugStrategy
 	 *            the strategy to use for generating slugs
@@ -86,8 +92,8 @@ public class MarkdownProcessor
 	 */
 	public static MarkdownProcessor defaultPipeline(SlugStrategy slugStrategy)
 	{
-		return new MarkdownProcessor().addStep(new HeadingExtractor())
-			.addStep(new SlugMapper(slugStrategy)).addStep(new TocGenerator())
-			.addStep(new AnchorIdInjector());
+		return MarkdownProcessor.builder().step(new HeadingExtractor())
+			.step(new SlugMapper(slugStrategy)).step(new TocGenerator())
+			.step(new AnchorIdInjector()).build();
 	}
 }

@@ -43,16 +43,16 @@ public class AnchorIdInjector implements MarkdownProcessingStep
 	@Override
 	public void process(MarkdownContext context)
 	{
-		String[] lines = context.originalContent.split("\n");
+		String[] lines = context.getOriginalContent().split("\n");
 		StringBuilder modified = new StringBuilder();
 
 		int headingIndex = 0;
 		for (String line : lines)
 		{
-			if (headingIndex < context.headings.size() && line.trim().matches("^#{1,6} .+"))
+			if (headingIndex < context.getHeadings().size() && line.trim().matches("^#{1,6} .+"))
 			{
-				String headingText = context.headings.get(headingIndex);
-				String slug = context.slugs.get(headingIndex);
+				String headingText = context.getHeadings().get(headingIndex);
+				String slug = context.getSlugs().get(headingIndex);
 				String hashPrefix = line.substring(0, line.indexOf(headingText)).trim();
 				modified.append(hashPrefix).append(" ").append(headingText).append(" {#")
 					.append(slug).append("}");
@@ -64,6 +64,7 @@ public class AnchorIdInjector implements MarkdownProcessingStep
 			}
 			modified.append("\n");
 		}
-		context.originalContent = modified.toString();
+
+		context.setOriginalContent(modified.toString());
 	}
 }

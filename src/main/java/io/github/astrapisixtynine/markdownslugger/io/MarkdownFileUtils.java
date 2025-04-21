@@ -32,6 +32,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import io.github.astrapisixtynine.markdownslugger.core.MarkdownContext;
+import io.github.astrapisixtynine.markdownslugger.core.MarkdownProcessor;
+import io.github.astrapisixtynine.markdownslugger.pipeline.AnchorIdInjector;
+import io.github.astrapisixtynine.markdownslugger.pipeline.HeadingExtractor;
+import io.github.astrapisixtynine.markdownslugger.pipeline.TocGenerator;
+import io.github.astrapisixtynine.markdownslugger.slug.DefaultSlugStrategy;
+import io.github.astrapisixtynine.markdownslugger.slug.SlugMapper;
+import io.github.astrapisixtynine.markdownslugger.slug.SlugifyConfig;
+
+
 /**
  * Utility class for Markdown-related file I/O operations
  */
@@ -156,6 +166,37 @@ public class MarkdownFileUtils
 		Set<String> fragmentIds = MarkdownAnchorFixer.extractFragmentLinks(lines);
 		List<String> fixedLines = MarkdownAnchorFixer.addMissingHeadingIds(lines, fragmentIds);
 		writeToFile(outputPath, fixedLines, dryRun);
+	}
+
+	/**
+	 * Processes a markdown file using a default pipeline and optionally writes output
+	 *
+	 * @param input
+	 *            the input markdown file path
+	 * @param output
+	 *            the output file path
+	 * @param config
+	 *            the config
+	 * @param dryRun
+	 *            if true, does not write to disk
+	 * @return the processed list of lines
+	 * @throws IOException
+	 *             if reading fails
+	 */
+	public static void processAndWriteMarkdown(Path input, Path output, SlugifyConfig config,
+		boolean dryRun) throws IOException
+	{
+		MarkdownContext context = new MarkdownContext();
+		context.setOriginalContent(Files.readString(input));
+
+		// Use default pipeline
+		MarkdownProcessor processor = MarkdownProcessor.builder().step(new HeadingExtractor())
+			.step(new SlugMapper(new DefaultSlugStrategy(config))).step(new TocGenerator())
+			.step(new AnchorIdInjector()).build();
+
+		processor.process(context);
+		List<String> fixedLines = context.getSlugs();
+		writeToFile(output, fixedLines, dryRun);
 	}
 
 	/**

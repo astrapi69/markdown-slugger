@@ -60,9 +60,9 @@ public class SlugMapper implements MarkdownProcessingStep
 	@Override
 	public void process(MarkdownContext context)
 	{
-		for (String heading : context.headings)
+		for (String heading : context.getHeadings())
 		{
-			context.slugs.add(slugStrategy.toSlug(heading));
+			context.getSlugs().add(slugStrategy.toSlug(heading));
 		}
 	}
 }

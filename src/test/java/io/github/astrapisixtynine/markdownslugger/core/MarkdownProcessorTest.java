@@ -64,7 +64,7 @@ class MarkdownProcessorTest
 			""".stripIndent();
 
 		MarkdownContext context = new MarkdownContext();
-		context.originalContent = markdown;
+		context.setOriginalContent(markdown);
 
 		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
 			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
@@ -76,17 +76,17 @@ class MarkdownProcessorTest
 		processor.process(context);
 
 		// Assert headings
-		List<String> headings = context.headings;
+		List<String> headings = context.getHeadings();
 		assertEquals(3, headings.size());
 		assertEquals("Title One", headings.get(0));
 		assertEquals("Subtitle Two", headings.get(1));
 		assertEquals("Final Section", headings.get(2));
 
 		// Assert heading levels
-		assertEquals(List.of(1, 2, 3), context.headingLevels);
+		assertEquals(List.of(1, 2, 3), context.getHeadingLevels());
 
 		// Assert slugs
-		List<String> slugs = context.slugs;
+		List<String> slugs = context.getSlugs();
 		assertEquals("title-one", slugs.get(0));
 		assertEquals("subtitle-two", slugs.get(1));
 		assertEquals("final-section", slugs.get(2));
@@ -95,12 +95,12 @@ class MarkdownProcessorTest
 		String expectedToc = String.join("\n", "- [Title One](#title-one)",
 			"  - [Subtitle Two](#subtitle-two)", "    - [Final Section](#final-section)");
 
-		assertEquals(expectedToc.trim(), context.toc.trim());
+		assertEquals(expectedToc.trim(), context.getToc().trim());
 
 		// Assert anchor IDs injected
-		assertTrue(context.originalContent.contains("# Title One {#title-one}"));
-		assertTrue(context.originalContent.contains("## Subtitle Two {#subtitle-two}"));
-		assertTrue(context.originalContent.contains("### Final Section {#final-section}"));
+		assertTrue(context.getOriginalContent().contains("# Title One {#title-one}"));
+		assertTrue(context.getOriginalContent().contains("## Subtitle Two {#subtitle-two}"));
+		assertTrue(context.getOriginalContent().contains("### Final Section {#final-section}"));
 	}
 
 	/**
@@ -121,7 +121,7 @@ class MarkdownProcessorTest
 		Files.writeString(tempFile, content);
 
 		MarkdownContext context = new MarkdownContext();
-		context.originalContent = Files.readString(tempFile);
+		context.setOriginalContent(Files.readString(tempFile));
 
 		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
 			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
@@ -133,13 +133,13 @@ class MarkdownProcessorTest
 
 		processor.process(context);
 
-		assertEquals(List.of("Heading A", "Heading B", "Heading C"), context.headings);
-		assertEquals(List.of("heading-a", "heading-b", "heading-c"), context.slugs);
+		assertEquals(List.of("Heading A", "Heading B", "Heading C"), context.getHeadings());
+		assertEquals(List.of("heading-a", "heading-b", "heading-c"), context.getSlugs());
 
 		// Check rewritten markdown includes anchor IDs
-		assertTrue(context.originalContent.contains("# Heading A {#heading-a}"));
-		assertTrue(context.originalContent.contains("## Heading B {#heading-b}"));
-		assertTrue(context.originalContent.contains("### Heading C {#heading-c}"));
+		assertTrue(context.getOriginalContent().contains("# Heading A {#heading-a}"));
+		assertTrue(context.getOriginalContent().contains("## Heading B {#heading-b}"));
+		assertTrue(context.getOriginalContent().contains("### Heading C {#heading-c}"));
 	}
 
 	/**
@@ -162,7 +162,7 @@ class MarkdownProcessorTest
 		assertTrue(Files.exists(mdFilePath), "Markdown file must exist");
 
 		MarkdownContext context = new MarkdownContext();
-		context.originalContent = Files.readString(mdFilePath);
+		context.setOriginalContent(Files.readString(mdFilePath));
 		Map<String, String> replacements = new HashMap<>();
 		replacements.put("?", "");
 		replacements.put("❖", "");
@@ -182,15 +182,15 @@ class MarkdownProcessorTest
 		processor.process(context);
 
 		// Optional: Add assertions to verify that the pipeline is not empty
-		assertFalse(context.headings.isEmpty(), "Headings should be extracted");
-		assertEquals(context.headings.size(), context.slugs.size(),
+		assertFalse(context.getHeadings().isEmpty(), "Headings should be extracted");
+		assertEquals(context.getHeadings().size(), context.getSlugs().size(),
 			"Each heading should have a corresponding slug");
-		assertTrue(context.originalContent.contains("{#"),
+		assertTrue(context.getOriginalContent().contains("{#"),
 			"Modified content should include anchor IDs");
 
 		Path tocPath = Paths.get("src/test/resources/toc.md");
 		Files.createDirectories(tocPath.getParent()); // make sure the directory exists
-		Files.writeString(tocPath, context.toc);
+		Files.writeString(tocPath, context.getToc());
 	}
 
 
@@ -208,7 +208,7 @@ class MarkdownProcessorTest
 			""".stripIndent();
 
 		MarkdownContext context = new MarkdownContext();
-		context.originalContent = markdown;
+		context.setOriginalContent(markdown);
 
 		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
 			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
@@ -222,11 +222,11 @@ class MarkdownProcessorTest
 
 		assertEquals(
 			List.of("Welcome to the Jungle!", "What's New in v2.0?", "Über-cool Stuff & Features"),
-			context.headings);
-		assertEquals(List.of(1, 2, 3), context.headingLevels);
+			context.getHeadings());
+		assertEquals(List.of(1, 2, 3), context.getHeadingLevels());
 		assertEquals(
 			List.of("welcome-to-the-jungle", "whats-new-in-v20", "uber-cool-stuff-features"),
-			context.slugs);
+			context.getSlugs());
 
 	}
 }

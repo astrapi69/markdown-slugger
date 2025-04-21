@@ -44,7 +44,7 @@ public class HeadingExtractor implements MarkdownProcessingStep
 	@Override
 	public void process(MarkdownContext context)
 	{
-		String[] lines = context.originalContent.split("\n");
+		String[] lines = context.getOriginalContent().split("\n");
 		for (String line : lines)
 		{
 			String trimmed = line.trim();
@@ -55,8 +55,8 @@ public class HeadingExtractor implements MarkdownProcessingStep
 				{
 					level++;
 				}
-				context.headingLevels.add(level);
-				context.headings.add(trimmed.replaceFirst("^#+ ", ""));
+				context.getHeadingLevels().add(level);
+				context.getHeadings().add(trimmed.replaceFirst("^#+ ", ""));
 			}
 		}
 	}
