@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.github.astrapisixtynine.markdownslugger.slug.DefaultSlugStrategy;
@@ -67,15 +66,10 @@ class MarkdownProcessorTest
 		MarkdownContext context = new MarkdownContext();
 		context.originalContent = markdown;
 
-		SlugifyConfig config = new SlugifyConfig(Map.of(), // replacements
-			true, // toLowerCase
-			true, // stripNonAlphanumeric
-			"-", // whitespaceReplacement
-			true, // trimEdges
-			true, // removeAccents
-			true, // collapseDashes
-			"[^a-z0-9\\s-]" // allowedCharactersRegex
-		);
+		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
+			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+			.removeAccents(true).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
 
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
@@ -128,15 +122,12 @@ class MarkdownProcessorTest
 
 		MarkdownContext context = new MarkdownContext();
 		context.originalContent = Files.readString(tempFile);
-		SlugifyConfig config = new SlugifyConfig(Map.of(), // replacements
-			true, // toLowerCase
-			true, // stripNonAlphanumeric
-			"-", // whitespaceReplacement
-			true, // trimEdges
-			true, // removeAccents
-			true, // collapseDashes
-			"[^a-z0-9\\s-]" // allowedCharactersRegex
-		);
+
+		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
+			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+			.removeAccents(true).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
+
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
 
@@ -164,7 +155,7 @@ class MarkdownProcessorTest
 	 *             if file reading fails
 	 */
 	@Test
-//	@Disabled("test with your md file and enable this test case")
+	// @Disabled("test with your md file and enable this test case")
 	void testWithSpecificMarkdownFile() throws Exception
 	{
 		Path mdFilePath = Paths.get("src/test/resources/ia_pour_tous_livre.gfm");
@@ -179,15 +170,12 @@ class MarkdownProcessorTest
 		replacements.put("’", "");
 		replacements.put("▷", "");
 		replacements.put(".", "");
-		SlugifyConfig config = new SlugifyConfig(replacements, // replacements
-			true, // toLowerCase
-			false, // stripNonAlphanumeric
-			"-", // whitespaceReplacement
-			true, // trimEdges
-			false, // removeAccents
-			true, // collapseDashes
-			"[^a-z0-9\\s-]" // allowedCharactersRegex
-		);
+
+		SlugifyConfig config = SlugifyConfig.builder().replacements(replacements).toLowerCase(true)
+			.stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
+			.removeAccents(false).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
+
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
 
@@ -221,14 +209,11 @@ class MarkdownProcessorTest
 
 		MarkdownContext context = new MarkdownContext();
 		context.originalContent = markdown;
-		SlugifyConfig config = new SlugifyConfig(Map.of(), // replacements
-			true, // toLowerCase
-			true, // stripNonAlphanumeric
-			"-", // whitespaceReplacement
-			true, // trimEdges
-			true, // removeAccents
-			false, // collapseDashes <-- set to false
-			"[^a-z0-9\\s-]");
+
+		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
+			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+			.removeAccents(true).collapseDashes(false).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
 
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
