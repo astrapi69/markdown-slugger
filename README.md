@@ -122,12 +122,38 @@ maven {
 - [x] Heading extraction and level tracking
 - [x] Markdown TOC generation
 - [x] Anchor ID injection (for Pandoc/EPUB compatibility)
-- [ ] File I/O utilities [Issue: Add reusable File I/O utilities for markdown processing](https://github.com/astrapi69/markdown-slugger/issues/1)
+- [x] File I/O utilities [Issue: Add reusable File I/O utilities for markdown processing](https://github.com/astrapi69/markdown-slugger/issues/1)
 - [ ] CLI interface [Issue: Add CLI tool for processing markdown files](https://github.com/astrapi69/markdown-slugger/issues/2)
 - [ ] HTML anchor inspection [Issue: HTML anchor inspection for broken internal links](https://github.com/astrapi69/markdown-slugger/issues/3)
 - [ ] Custom slug presets (GitHub/Pandoc) [Issue: Support custom slug presets (GitHub/Pandoc/etc)](https://github.com/astrapi69/markdown-slugger/issues/4)
 
 ---
+
+📂 File I/O Utilities
+
+The MarkdownFileUtils class provides reusable methods for working with Markdown files:
+
+✅ Features
+
+* readLines(Path) – Reads a Markdown file into a list of strings
+* writeLines(Path, List<String>) – Writes a list of strings to a file
+* fileExists(Path) – Checks if a file exists
+* listMarkdownFiles(Path dir) – Lists all .md files in a directory
+* createBackup(Path) – Creates a .bak file before changes
+* writeToFile(Path, List<String>, boolean dryRun) – Writes content, optionally in dry-run mode
+* processAndWriteMarkdown(Path input, Path output, boolean dryRun) – End-to-end processing (e.g., for anchor injection)
+
+🧪 Example Usage
+```java
+Path input = Paths.get("README.md");
+Path output = Paths.get("README_fixed.md");
+
+// Perform a dry-run preview (no file will be written)
+MarkdownFileUtils.processAndWriteMarkdown(input, output, true);
+
+// Write changes to disk (with anchor injection)
+MarkdownFileUtils.processAndWriteMarkdown(input, output, false);
+```
 
 ## License
 
