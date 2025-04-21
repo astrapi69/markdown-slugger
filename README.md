@@ -122,10 +122,10 @@ maven {
 - [x] Heading extraction and level tracking
 - [x] Markdown TOC generation
 - [x] Anchor ID injection (for Pandoc/EPUB compatibility)
-- [ ] File I/O utilities
-- [ ] CLI interface
-- [ ] HTML anchor inspection
-- [ ] Custom slug presets (GitHub/Pandoc)
+- [ ] File I/O utilities [Issue: Add reusable File I/O utilities for markdown processing](https://github.com/astrapi69/markdown-slugger/issues/1)
+- [ ] CLI interface [Issue: Add CLI tool for processing markdown files](https://github.com/astrapi69/markdown-slugger/issues/2)
+- [ ] HTML anchor inspection [Issue: HTML anchor inspection for broken internal links](https://github.com/astrapi69/markdown-slugger/issues/3)
+- [ ] Custom slug presets (GitHub/Pandoc) [Issue: Support custom slug presets (GitHub/Pandoc/etc)](https://github.com/astrapi69/markdown-slugger/issues/4)
 
 ---
 

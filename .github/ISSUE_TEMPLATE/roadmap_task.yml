@@ -1,0 +1,31 @@
+name: 📌 Roadmap Task
+description: Track a planned feature or technical milestone
+title: "[Roadmap] "
+labels: [roadmap, enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue represents a planned roadmap item
+
+  - type: input
+    id: area
+    attributes:
+      label: Area or module
+      placeholder: slug, toc, cli, etc.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task description
+      placeholder: Describe the task or implementation idea
+
+  - type: checkboxes
+    id: status
+    attributes:
+      label: Initial checklist
+      options:
+        - label: Design accepted
+        - label: Implementation started
+        - label: Tests written
+        - label: Documentation ready
