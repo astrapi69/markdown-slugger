@@ -170,6 +170,19 @@ class MarkdownProcessorTest
 		replacements.put("’", "");
 		replacements.put("▷", "");
 		replacements.put(".", "");
+		replacements.put("☰", "");
+		replacements.put("⚠", "");
+		replacements.put("✧", "");
+		replacements.put("✦", "");
+		replacements.put("↺", "");
+		replacements.put("⚡", "");
+		replacements.put("✉", "");
+		replacements.put("⌂", "");
+		replacements.put("✎", "");
+		replacements.put("¶", "");
+		replacements.put("»", "");
+		replacements.put("▣", "");
+		replacements.put("✓", "");
 
 		SlugifyConfig config = SlugifyConfig.builder().replacements(replacements).toLowerCase(true)
 			.stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
