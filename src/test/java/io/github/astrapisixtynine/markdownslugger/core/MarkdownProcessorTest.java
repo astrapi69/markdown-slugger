@@ -164,14 +164,14 @@ class MarkdownProcessorTest
 		MarkdownContext context = new MarkdownContext();
 		context.setOriginalContent(Files.readString(mdFilePath));
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("?", "");
-		replacements.put("❖", "");
-		replacements.put(":", "");
+		replacements.put("?", "-");
+		replacements.put("❖", "-");
+		replacements.put(":", "-");
 		replacements.put("’", "");
-		replacements.put("▷", "");
+		replacements.put("▷", "-");
 		replacements.put(".", "");
-		replacements.put("☰", "");
-		replacements.put("⚠", "");
+		replacements.put("☰", "-");
+		replacements.put("⚠", "-");
 		replacements.put("✧", "");
 		replacements.put("✦", "");
 		replacements.put("↺", "");
@@ -183,6 +183,13 @@ class MarkdownProcessorTest
 		replacements.put("»", "");
 		replacements.put("▣", "");
 		replacements.put("✓", "");
+		replacements.put(",", "");
+		replacements.put("★", "");
+		replacements.put("→", "");
+		replacements.put("(", "");
+		replacements.put(")", "");
+		replacements.put("✕ ", "-");
+		replacements.put("✷", "-");
 
 		SlugifyConfig config = SlugifyConfig.builder().replacements(replacements).toLowerCase(true)
 			.stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
