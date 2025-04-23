@@ -25,21 +25,21 @@ public class TestObjectFactory
 		List<ReplacementRule> rules = new ArrayList<>();
 
 		rules.add(ReplacementRule.builder().pattern("\\?").replacement("-").regex(true).build());
-		rules.add(ReplacementRule.builder().pattern("❖").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("❖").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern(": ").replacement("-").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern(":").replacement("-").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("’").replacement("").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("▷").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("▷").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("\\.").replacement("").regex(true).build());
-		rules.add(ReplacementRule.builder().pattern("☰").replacement("-").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("⚠").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("☰").replacement("").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("⚠").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("✧").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("✦").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("↺").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("⚡").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("✉").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("⌂").replacement("").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("✎").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("✎").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("¶").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("»").replacement("").regex(false).build());
 		rules.add(ReplacementRule.builder().pattern("▣").replacement("").regex(false).build());
@@ -50,9 +50,20 @@ public class TestObjectFactory
 		rules.add(ReplacementRule.builder().pattern("\\(").replacement("").regex(true).build());
 		rules.add(ReplacementRule.builder().pattern("\\)").replacement("").regex(true).build());
 		rules.add(ReplacementRule.builder().pattern("✕ ").replacement("-").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("✷").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("✷").replacement("").regex(false).build());
 
 		return rules;
 	}
 
+	public static List<ReplacementRule> getShortTestRules()
+	{
+		List<ReplacementRule> rules = new ArrayList<>();
+
+		rules.add(ReplacementRule.builder().pattern(": ").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern(":").replacement("-").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("’").replacement("").regex(false).build());
+		rules.add(ReplacementRule.builder().pattern("✎ ").replacement("-").regex(false).build());
+
+		return rules;
+	}
 }

@@ -2,7 +2,6 @@ package io.github.astrapisixtynine.markdownslugger.slug;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,7 @@ class SlugifyExtensionsTest
 		String heading = "✎ Exemple 1 : Organiser sa journée";
 		String expectedSlug = "-exemple-1--organiser-sa-journée";
 
-		List<ReplacementRule> replacementRules = getShortTestRules();
+		List<ReplacementRule> replacementRules = TestObjectFactory.getReplacementRules();
 		SlugifyConfig slugifyConfig = TestObjectFactory.getSlugifyConfig(replacementRules);
 
 		// When
@@ -64,18 +63,5 @@ class SlugifyExtensionsTest
 		assertEquals(expectedSlug, actualSlug,
 			"Slug should preserve symbol as dash and handle colon-space with double hyphen");
 	}
-
-	public static List<ReplacementRule> getShortTestRules()
-	{
-		List<ReplacementRule> rules = new ArrayList<>();
-
-		rules.add(ReplacementRule.builder().pattern(": ").replacement("-").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern(":").replacement("-").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("’").replacement("").regex(false).build());
-		rules.add(ReplacementRule.builder().pattern("✎ ").replacement("-").regex(false).build());
-
-		return rules;
-	}
-
 
 }
