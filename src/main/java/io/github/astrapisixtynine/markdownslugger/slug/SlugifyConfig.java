@@ -24,7 +24,7 @@
  */
 package io.github.astrapisixtynine.markdownslugger.slug;
 
-import java.util.Map;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
@@ -39,55 +39,55 @@ import lombok.Data;
 @Builder
 public class SlugifyConfig
 {
-
 	/**
-	 * Default map of common diacritic characters to ASCII replacements for slugification
+	 * Default list of common diacritic character replacements for slugification
+	 *
 	 * <p>
 	 * Includes mappings for:
 	 * <ul>
 	 * <li>German umlauts (ä, ö, ü, ß)</li>
-	 * <li>Common accented characters (à, á, â, ã, etc)</li>
+	 * <li>Common accented characters (à, á, â, ã, etc.)</li>
 	 * <li>Special characters (ç)</li>
 	 * </ul>
 	 */
-	public static final Map<String, String> DEFAULT_REPLACEMENTS = Map.ofEntries(
-		Map.entry("à", "a"), Map.entry("â", "a"), Map.entry("ä", "a"), Map.entry("á", "a"),
-		Map.entry("ã", "a"),
+	public static final List<ReplacementRule> DEFAULT_REPLACEMENT_RULES = List.of(
+		new ReplacementRule("à", "a", false), new ReplacementRule("â", "a", false),
+		new ReplacementRule("ä", "a", false), new ReplacementRule("á", "a", false),
+		new ReplacementRule("ã", "a", false),
 
-		Map.entry("é", "e"), Map.entry("è", "e"), Map.entry("ê", "e"), Map.entry("ë", "e"),
+		new ReplacementRule("é", "e", false), new ReplacementRule("è", "e", false),
+		new ReplacementRule("ê", "e", false), new ReplacementRule("ë", "e", false),
 
-		Map.entry("î", "i"), Map.entry("ï", "i"),
+		new ReplacementRule("î", "i", false), new ReplacementRule("ï", "i", false),
 
-		Map.entry("ô", "o"), Map.entry("ö", "o"), Map.entry("ó", "o"),
+		new ReplacementRule("ô", "o", false), new ReplacementRule("ö", "o", false),
+		new ReplacementRule("ó", "o", false),
 
-		Map.entry("ù", "u"), Map.entry("û", "u"), Map.entry("ü", "u"),
+		new ReplacementRule("ù", "u", false), new ReplacementRule("û", "u", false),
+		new ReplacementRule("ü", "u", false),
 
-		Map.entry("ç", "c"));
-
+		new ReplacementRule("ç", "c", false));
 
 	/**
 	 * Default configuration for slugification
+	 *
 	 * <p>
 	 * Includes:
 	 * <ul>
-	 * <li>Default character replacements</li>
+	 * <li>Default character replacements for diacritics and special characters</li>
 	 * <li>Lowercase conversion</li>
-	 * <li>Non-alphanumeric stripping</li>
+	 * <li>No stripping of non-alphanumeric characters (unless configured)</li>
 	 * <li>Whitespace replacement with hyphens</li>
-	 * <li>Edge trimming</li>
+	 * <li>Trimming of leading and trailing separators</li>
+	 * <li>Collapse of multiple consecutive hyphens</li>
 	 * </ul>
 	 */
 	public static final SlugifyConfig DEFAULT_CONFIG = SlugifyConfig.builder()
-		.replacements(DEFAULT_REPLACEMENTS).toLowerCase(true).stripNonAlphanumeric(false)
-		.whitespaceReplacement("-").trimEdges(true).removeAccents(false).collapseDashes(true)
-		.allowedCharactersRegex("[^a-z0-9\\s-]").build();
+		.replacementRules(DEFAULT_REPLACEMENT_RULES) // now using the List<ReplacementRule>
+		.toLowerCase(true).stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
+		.removeAccents(false).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]").build();
 
-	/**
-	 * Map of custom character replacements (e.g., ä → ae, é → e, ü → ue) -- GETTER --
-	 *
-	 * @return the map of custom character replacements
-	 */
-	private final Map<String, String> replacements;
+	List<ReplacementRule> replacementRules;
 
 	/**
 	 * Whether to convert the resulting slug to lowercase -- GETTER --

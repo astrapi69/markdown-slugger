@@ -31,15 +31,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import io.github.astrapisixtynine.markdownslugger.slug.ReplacementRule;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugifyConfig;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugifyExtensions;
 
@@ -118,14 +118,19 @@ public class MarkdownAnchorFixerTest
 	@Test
 	void testSlugify()
 	{
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put("☕", "");
-		replacements.putAll(SlugifyConfig.DEFAULT_REPLACEMENTS);
+		List<ReplacementRule> customReplacements = new ArrayList<>();
+		customReplacements
+			.add(ReplacementRule.builder().pattern("☕").replacement("").regex(false).build()); // custom
+																								// literal
+																								// replacement
+		customReplacements.addAll(SlugifyConfig.DEFAULT_REPLACEMENT_RULES); // default diacritic
+																			// rules
 
-		SlugifyConfig config = SlugifyConfig.builder().replacements(replacements).toLowerCase(true)
-			.stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
-			.removeAccents(false).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
-			.build();
+		SlugifyConfig config = SlugifyConfig.builder().replacementRules(customReplacements)
+			.toLowerCase(true).stripNonAlphanumeric(false).whitespaceReplacement("-")
+			.trimEdges(true).removeAccents(false).collapseDashes(true)
+			.allowedCharactersRegex("[^a-z0-9\\s-]").build();
+
 		assertEquals("introduction-au-cafe",
 			SlugifyExtensions.slugify("Introduction au café ☕", config));
 		assertEquals("idees-creatives", SlugifyExtensions.slugify("Idées créatives"));

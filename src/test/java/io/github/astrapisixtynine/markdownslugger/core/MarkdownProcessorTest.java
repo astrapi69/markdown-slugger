@@ -29,14 +29,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import io.github.astrapisixtynine.markdownslugger.slug.DefaultSlugStrategy;
+import io.github.astrapisixtynine.markdownslugger.slug.ReplacementRule;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugifyConfig;
+import io.github.astrapisixtynine.markdownslugger.test.object.factory.TestObjectFactory;
 
 /**
  * Unit tests for the MarkdownProcessor pipeline Validates heading extraction, slug generation, TOC
@@ -66,10 +66,13 @@ class MarkdownProcessorTest
 		MarkdownContext context = new MarkdownContext();
 		context.setOriginalContent(markdown);
 
-		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
-			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+		SlugifyConfig config = SlugifyConfig.builder().replacementRules(List.of()) // empty list
+																					// instead of
+																					// Map.of()
+			.toLowerCase(true).stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
 			.removeAccents(true).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
 			.build();
+
 
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
@@ -123,10 +126,13 @@ class MarkdownProcessorTest
 		MarkdownContext context = new MarkdownContext();
 		context.setOriginalContent(Files.readString(tempFile));
 
-		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
-			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+		SlugifyConfig config = SlugifyConfig.builder().replacementRules(List.of()) // empty list
+																					// instead of
+																					// Map.of()
+			.toLowerCase(true).stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
 			.removeAccents(true).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
 			.build();
+
 
 		MarkdownProcessor processor = MarkdownProcessor
 			.defaultPipeline(new DefaultSlugStrategy(config));
@@ -163,41 +169,12 @@ class MarkdownProcessorTest
 
 		MarkdownContext context = new MarkdownContext();
 		context.setOriginalContent(Files.readString(mdFilePath));
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put("?", "-");
-		replacements.put("❖", "-");
-		replacements.put(":", "-");
-		replacements.put("’", "");
-		replacements.put("▷", "-");
-		replacements.put(".", "");
-		replacements.put("☰", "-");
-		replacements.put("⚠", "-");
-		replacements.put("✧", "");
-		replacements.put("✦", "");
-		replacements.put("↺", "");
-		replacements.put("⚡", "");
-		replacements.put("✉", "");
-		replacements.put("⌂", "");
-		replacements.put("✎", "");
-		replacements.put("¶", "");
-		replacements.put("»", "");
-		replacements.put("▣", "");
-		replacements.put("✓", "");
-		replacements.put(",", "");
-		replacements.put("★", "");
-		replacements.put("→", "");
-		replacements.put("(", "");
-		replacements.put(")", "");
-		replacements.put("✕ ", "-");
-		replacements.put("✷", "-");
 
-		SlugifyConfig config = SlugifyConfig.builder().replacements(replacements).toLowerCase(true)
-			.stripNonAlphanumeric(false).whitespaceReplacement("-").trimEdges(true)
-			.removeAccents(false).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
-			.build();
+		List<ReplacementRule> replacementRules = TestObjectFactory.getReplacementRules();
+		SlugifyConfig slugifyConfig = TestObjectFactory.getSlugifyConfig(replacementRules);
 
 		MarkdownProcessor processor = MarkdownProcessor
-			.defaultPipeline(new DefaultSlugStrategy(config));
+			.defaultPipeline(new DefaultSlugStrategy(slugifyConfig));
 
 		processor.process(context);
 
@@ -230,9 +207,11 @@ class MarkdownProcessorTest
 		MarkdownContext context = new MarkdownContext();
 		context.setOriginalContent(markdown);
 
-		SlugifyConfig config = SlugifyConfig.builder().replacements(Map.of()).toLowerCase(true)
-			.stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
-			.removeAccents(true).collapseDashes(false).allowedCharactersRegex("[^a-z0-9\\s-]")
+		SlugifyConfig config = SlugifyConfig.builder().replacementRules(List.of()) // empty list
+																					// instead of
+																					// Map.of()
+			.toLowerCase(true).stripNonAlphanumeric(true).whitespaceReplacement("-").trimEdges(true)
+			.removeAccents(true).collapseDashes(true).allowedCharactersRegex("[^a-z0-9\\s-]")
 			.build();
 
 		MarkdownProcessor processor = MarkdownProcessor

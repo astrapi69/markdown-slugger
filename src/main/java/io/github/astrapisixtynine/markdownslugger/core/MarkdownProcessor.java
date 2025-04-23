@@ -24,7 +24,6 @@
  */
 package io.github.astrapisixtynine.markdownslugger.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.astrapisixtynine.markdownslugger.pipeline.AnchorIdInjector;

@@ -25,7 +25,6 @@
 package io.github.astrapisixtynine.markdownslugger.slug;
 
 import java.text.Normalizer;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -94,10 +93,23 @@ public class SlugifyExtensions
 		String slug = text;
 
 		// 1. Apply custom replacements (e.g., ä → ae, é → e)
-		for (Map.Entry<String, String> entry : config.getReplacements().entrySet())
+		for (ReplacementRule rule : config.getReplacementRules())
 		{
-			slug = slug.replace(entry.getKey(), entry.getValue());
+			String before = slug;
+
+			slug = rule.isRegex()
+				? slug.replaceAll(rule.getPattern(), rule.getReplacement())
+				: slug.replace(rule.getPattern(), rule.getReplacement());
+
+			if (!slug.equals(before))
+			{
+				System.out.printf("Applied rule: %s → %s%n", rule.getPattern(),
+					rule.getReplacement());
+			}
 		}
+
+		System.out.println("After replacements: " + slug);
+
 
 		// 2. Optionally remove accents (Unicode normalization)
 		if (config.isRemoveAccents())
@@ -105,37 +117,36 @@ public class SlugifyExtensions
 			slug = Normalizer.normalize(slug, Normalizer.Form.NFD)
 				.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 		}
-
+		System.out.println("After accents: " + slug);
 		// 3. Convert to lowercase if enabled
 		if (config.isToLowerCase())
 		{
 			slug = slug.toLowerCase();
 		}
-
+		System.out.println("After lowercasing: " + slug);
 		// 4. Optionally remove non-alphanumeric characters (excluding space and dash)
 		if (config.isStripNonAlphanumeric())
 		{
 			slug = slug.replaceAll(config.getAllowedCharactersRegex(), "");
-
 		}
-
+		System.out.println("After stripping non-alphanumerics: " + slug);
 		// 5. Replace all whitespace with the configured replacement (e.g., "-")
 		slug = slug.replaceAll("\\s+", config.getWhitespaceReplacement());
-
+		System.out.println("After whitespace replacement: " + slug);
 		// 6. Optionally collapse multiple separators into one
 		if (config.isCollapseDashes())
 		{
 			String sep = Pattern.quote(config.getWhitespaceReplacement());
 			slug = slug.replaceAll(sep + "{2,}", config.getWhitespaceReplacement());
 		}
-
+		System.out.println("After collapsing dashes: " + slug);
 		// 7. Optionally trim leading/trailing separators
 		if (config.isTrimEdges())
 		{
 			String sep = Pattern.quote(config.getWhitespaceReplacement());
 			slug = slug.replaceAll("^" + sep + "+", "").replaceAll(sep + "+$", "");
 		}
-
+		System.out.println("After trimming edges: " + slug);
 		return slug;
 	}
 
