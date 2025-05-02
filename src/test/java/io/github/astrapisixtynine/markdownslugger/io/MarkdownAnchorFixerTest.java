@@ -24,6 +24,7 @@
  */
 package io.github.astrapisixtynine.markdownslugger.io;
 
+import static io.github.astrapisixtynine.markdownslugger.io.MarkdownAnchorFixer.convertToFragmentIds;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,6 +51,17 @@ import io.github.astrapisixtynine.markdownslugger.slug.SlugifyExtensions;
 public class MarkdownAnchorFixerTest
 {
 
+	@Test
+	void testAddMissingHeadingIdsFromFile() throws IOException
+	{
+		Path input = Paths.get("src/test/resources/chapter-03.md");
+
+		String result = MarkdownAnchorFixer.addMissingHeadingIds(input);
+
+		assertTrue(result.contains("{#"),
+				"Expected at least one heading with an injected anchor ID");
+	}
+
 	/**
 	 * Tests the complete anchor fix workflow using a real Markdown file Verifies that anchors are
 	 * correctly injected and file is written to disk
@@ -60,8 +72,8 @@ public class MarkdownAnchorFixerTest
 	@Test
 	void testFixMarkdownFileAddsMissingHeadingIds() throws IOException
 	{
-		Path input = Paths.get("src/test/resources/ia_pour_tous_livre.gfm");
-		Path output = Paths.get("build/tmp/ia_pour_tous_livre_fixed.gfm");
+		Path input = Paths.get("src/test/resources/chapter-03.md");
+		Path output = Paths.get("build/tmp/chapter-03.md");
 		Files.createDirectories(output.getParent());
 
 		List<String> lines = Files.readAllLines(input);

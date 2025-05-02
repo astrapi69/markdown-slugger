@@ -24,6 +24,9 @@
  */
 package io.github.astrapisixtynine.markdownslugger.io;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +40,33 @@ import io.github.astrapisixtynine.markdownslugger.slug.SlugifyExtensions;
  */
 public class MarkdownAnchorFixer
 {
+
+	/**
+	 * Extracts all headings (from level 2 to 6) from a Markdown file and removes the hash symbols
+	 *
+	 * @param path
+	 *            the path to the Markdown file
+	 * @return a list of heading texts without the leading ## markers
+	 * @throws IOException
+	 *             if reading the file fails
+	 */
+	public static List<String> extractHeadingsWithoutHashes(Path path) throws IOException
+	{
+		List<String> lines = Files.readAllLines(path);
+		List<String> headings = new ArrayList<>();
+		Pattern headingPattern = Pattern.compile("^(#{2,6})\\s+(.*)$");
+
+		for (String line : lines)
+		{
+			Matcher matcher = headingPattern.matcher(line);
+			if (matcher.matches())
+			{
+				String headingText = matcher.group(2).trim();
+				headings.add(headingText);
+			}
+		}
+		return headings;
+	}
 
 	/**
 	 * Extracts all internal Markdown fragment link IDs from the given lines
@@ -69,7 +99,7 @@ public class MarkdownAnchorFixer
 	 *            the set of fragment IDs that should exist
 	 * @return a list of lines with missing heading IDs injected where appropriate
 	 */
-	public static List<String> addMissingHeadingIds(List<String> lines, Set<String> ids)
+	public static List<String> addMissingHeadingIds(List<String> lines, Collection<String> ids)
 	{
 		List<String> result = new ArrayList<>();
 		Pattern headingPattern = Pattern.compile("^(#{2,6})\\s+(.*)$");
@@ -90,6 +120,41 @@ public class MarkdownAnchorFixer
 		}
 
 		return result;
+	}
+	/**
+	 * Reads the content of a Markdown file, adds missing heading IDs, and returns the updated content
+	 *
+	 * @param path
+	 *            the path to the Markdown file
+	 * @return the full content of the file with added heading IDs
+	 * @throws IOException
+	 *             if reading the file fails
+	 */
+	public static String addMissingHeadingIds(Path path) throws IOException
+	{
+		List<String> markdownLines = Files.readAllLines(path);
+		List<String> headings = extractHeadingsWithoutHashes(path);
+		Set<String> fragmentIds = new HashSet<>(convertToFragmentIds(headings));
+		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds);
+		return String.join(System.lineSeparator(), result);
+	}
+
+	/**
+	 * Converts a list of heading texts to their corresponding slugified fragment IDs
+	 *
+	 * @param headings
+	 *            the list of heading texts (without ##)
+	 * @return a list of slugified fragment IDs
+	 */
+	public static List<String> convertToFragmentIds(List<String> headings)
+	{
+		List<String> fragmentIds = new ArrayList<>();
+		for (String heading : headings)
+		{
+			String slug = SlugifyExtensions.slugify(heading);
+			fragmentIds.add(slug);
+		}
+		return fragmentIds;
 	}
 
 }
