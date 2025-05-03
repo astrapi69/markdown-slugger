@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.astrapisixtynine.markdownslugger.slug.SlugifyConfig;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugifyExtensions;
 
 /**
@@ -54,7 +55,7 @@ public class MarkdownAnchorFixer
 	{
 		List<String> lines = Files.readAllLines(path);
 		List<String> headings = new ArrayList<>();
-		Pattern headingPattern = Pattern.compile("^(#{2,6})\\s+(.*)$");
+		Pattern headingPattern = Pattern.compile("^(#{0,6})\\s+(.*)$");
 
 		for (String line : lines)
 		{
@@ -102,7 +103,7 @@ public class MarkdownAnchorFixer
 	public static List<String> addMissingHeadingIds(List<String> lines, Collection<String> ids)
 	{
 		List<String> result = new ArrayList<>();
-		Pattern headingPattern = Pattern.compile("^(#{2,6})\\s+(.*)$");
+		Pattern headingPattern = Pattern.compile("^(#{1,6})\\s+(.*)$");
 
 		for (String line : lines)
 		{
@@ -121,8 +122,10 @@ public class MarkdownAnchorFixer
 
 		return result;
 	}
+
 	/**
-	 * Reads the content of a Markdown file, adds missing heading IDs, and returns the updated content
+	 * Reads the content of a Markdown file, adds missing heading IDs, and returns the updated
+	 * content
 	 *
 	 * @param path
 	 *            the path to the Markdown file
@@ -134,7 +137,29 @@ public class MarkdownAnchorFixer
 	{
 		List<String> markdownLines = Files.readAllLines(path);
 		List<String> headings = extractHeadingsWithoutHashes(path);
-		Set<String> fragmentIds = new HashSet<>(convertToFragmentIds(headings));
+		List<String> toFragmentIds = convertToFragmentIds(headings);
+		Set<String> fragmentIds = new HashSet<>(toFragmentIds);
+		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds);
+		return String.join(System.lineSeparator(), result);
+	}
+
+
+	/**
+	 * Reads the content of a Markdown file, adds missing heading IDs, and returns the updated
+	 * content
+	 *
+	 * @param path
+	 *            the path to the Markdown file
+	 * @return the full content of the file with added heading IDs
+	 * @throws IOException
+	 *             if reading the file fails
+	 */
+	public static String addMissingHeadingIds(Path path, SlugifyConfig config) throws IOException
+	{
+		List<String> markdownLines = Files.readAllLines(path);
+		List<String> headings = extractHeadingsWithoutHashes(path);
+		List<String> toFragmentIds = convertToFragmentIds(headings, config);
+		Set<String> fragmentIds = new HashSet<>(toFragmentIds);
 		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds);
 		return String.join(System.lineSeparator(), result);
 	}
@@ -148,13 +173,152 @@ public class MarkdownAnchorFixer
 	 */
 	public static List<String> convertToFragmentIds(List<String> headings)
 	{
-		List<String> fragmentIds = new ArrayList<>();
+		return convertToFragmentIds(headings, SlugifyConfig.DEFAULT_CONFIG);
+	}
+
+	/**
+	 * Converts a list of heading texts to their corresponding slugified fragment IDs
+	 *
+	 * @param headings
+	 *            the list of heading texts (without ##)
+	 * @return a list of slugified fragment IDs
+	 */
+	public static List<String> convertToFragmentIds(List<String> headings, SlugifyConfig config)
+	{
+		if (headings == null || headings.isEmpty())
+		{
+			return Collections.emptyList();
+		}
+
+		List<String> fragmentIds = new ArrayList<>(headings.size());
 		for (String heading : headings)
 		{
-			String slug = SlugifyExtensions.slugify(heading);
+			String slug = SlugifyExtensions.slugify(heading, config);
 			fragmentIds.add(slug);
 		}
 		return fragmentIds;
+	}
+
+	/**
+	 * Reads the content of a Markdown file, adds missing heading IDs, and overwrites the file
+	 * with the updated content
+	 *
+	 * @param path
+	 *            the path to the Markdown file
+	 * @param config
+	 *            the slugify configuration used for generating fragment IDs
+	 * @throws IOException
+	 *             if reading or writing the file fails
+	 */
+	public static void addMissingHeadingIdsInPlace(Path path, SlugifyConfig config) throws IOException
+	{
+		List<String> markdownLines = Files.readAllLines(path);
+		List<String> headings = extractHeadingsWithoutHashes(path);
+		List<String> toFragmentIds = convertToFragmentIds(headings, config);
+		Set<String> fragmentIds = new HashSet<>(toFragmentIds);
+		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds);
+		Files.write(path, result);
+	}
+//
+//	/**
+//	 * Generates a nested Markdown Table of Contents (TOC) from the headings in a Markdown file
+//	 *
+//	 * @param path   the path to the Markdown file with headings and optional {#id} anchors
+//	 * @param config the slugify config used to match or generate anchor IDs
+//	 * @return a nested Markdown TOC string
+//	 * @throws IOException if reading the file fails
+//	 */
+//	public static String generateMarkdownToc(Path path, SlugifyConfig config) throws IOException
+//	{
+//		List<String> lines = Files.readAllLines(path);
+//		StringBuilder toc = new StringBuilder();
+//		int baseLevel = -1;
+//
+//		for (String line : lines)
+//		{
+//			if (!line.startsWith("#"))
+//				continue;
+//
+//			// Count number of # to determine heading level
+//			int level = 0;
+//			while (level < line.length() && line.charAt(level) == '#')
+//			{
+//				level++;
+//			}
+//
+//			if (baseLevel == -1)
+//				baseLevel = level;
+//
+//			// Extract heading text
+//			String headingText = line.substring(level).trim().replaceAll("\\{#.*}", "").trim();
+//
+//			// Extract or generate anchor
+//			Matcher anchorMatcher = Pattern.compile("\\{#([^}]+)}").matcher(line);
+//			String anchor = null;
+//			if (anchorMatcher.find())
+//			{
+//				anchor = anchorMatcher.group(1);
+//			}
+//			else
+//			{
+//				// Generate anchor if not already present
+//				List<String> asList = List.of(headingText);
+//				anchor = MarkdownAnchorFixer.convertToFragmentIds(asList, config).get(0);
+//			}
+//
+//			// Build TOC line
+//			String indent = "    ".repeat(Math.max(0, level - baseLevel));
+//			String tocLine = indent + "- [" + headingText + "](#" + anchor + ")";
+//			toc.append(tocLine).append(System.lineSeparator());
+//		}
+//
+//		return toc.toString().trim();
+//	}
+
+	/**
+	 * Generates a nested Markdown table of contents (TOC) from headings in a Markdown file
+	 *
+	 * @param path
+	 *            the path to the Markdown file
+	 * @param config
+	 *            the slugify configuration used to normalize fragment IDs
+	 * @return a list of TOC lines as strings
+	 * @throws IOException
+	 *             if reading the file fails
+	 */
+	public static List<String> generateMarkdownToc(Path path, SlugifyConfig config) throws IOException
+	{
+		List<String> lines = Files.readAllLines(path);
+		List<String> toc = new ArrayList<>();
+		Pattern headingPattern = Pattern.compile("^(#{1,6})\\s*(.+?)(\\s*\\{#.*?})?$");
+
+		for (String line : lines)
+		{
+			Matcher matcher = headingPattern.matcher(line);
+			if (matcher.matches())
+			{
+				String hashes = matcher.group(1);
+				String text = matcher.group(2).trim();
+				String anchorId = matcher.group(3);
+
+				String slug;
+				if (anchorId != null)
+				{
+					slug = anchorId.replaceAll("[{}#]", "");
+				}
+				else
+				{
+					List<String> temp = List.of(text);
+					List<String> fragments = MarkdownAnchorFixer.convertToFragmentIds(temp, config);
+					slug = fragments.get(0);
+				}
+
+				int level = hashes.length();
+				String indentation = "    ".repeat(level - 1);
+				toc.add(String.format("%s- [%s](#%s)", indentation, text, slug));
+			}
+		}
+		return toc;
 	}
 
 }
