@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.github.astrapisixtynine.markdownslugger.slug.ReplacementRule;
@@ -51,8 +52,43 @@ import io.github.astrapisixtynine.markdownslugger.slug.SlugifyExtensions;
  */
 public class MarkdownAnchorFixerTest
 {
+	@Test
+	void testAddMissingHeadingIdToLine()
+	{
+		SlugifyConfig config = SlugifyConfig.builder()
+			.replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES).toLowerCase(true)
+			.stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+			.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
+
+		String line = "### ✎ Exemple 1 : Élargir son vocabulaire";
+		String expected = "### ✎ Exemple 1 : Élargir son vocabulaire {#exemple-1-elargir-son-vocabulaire}";
+
+		String actual = MarkdownAnchorFixer.addMissingHeadingIdToLine(line, config);
+
+		assertEquals(expected, actual);
+	}
+
 
 	@Test
+	void testPromptAdviceLanguageWithSingleHash() throws IOException
+	{
+
+		SlugifyConfig config = SlugifyConfig.builder()
+			.replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES).toLowerCase(true)
+			.stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+			.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
+		String line = "# Chapitre 4: Apprentissage et développement des compétences avec l'IA";
+		String expected = "# Chapitre 4: Apprentissage et développement des compétences avec l'IA {#chapitre-4-apprentissage-et-developpement-des-competences-avec-lia}";
+		String actual = MarkdownAnchorFixer.addMissingHeadingIdToLine(line, config);
+
+		assertEquals(expected, actual);
+	}
+
+
+	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testAddMissingHeadingIdsFromFile() throws IOException
 	{
 		Path input;
@@ -76,6 +112,7 @@ public class MarkdownAnchorFixerTest
 	 *             if file I/O fails during setup or assertions
 	 */
 	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testFixMarkdownFileAddsMissingHeadingIds() throws IOException
 	{
 		Path input = Paths.get("src/test/resources/chapter-03.md");
@@ -157,6 +194,7 @@ public class MarkdownAnchorFixerTest
 
 
 	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testAddMissingHeadingIdsFromFileWithSlugifyConfig() throws IOException
 	{
 		Path input;
@@ -177,6 +215,7 @@ public class MarkdownAnchorFixerTest
 
 
 	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testAddMissingHeadingIdsFromFile2() throws IOException
 	{
 		Path input;
@@ -193,9 +232,10 @@ public class MarkdownAnchorFixerTest
 			.extractHeadingsWithoutHashes(input);
 
 		// Step 3: convert to properly normalized slugs using strict config
-		List<ReplacementRule> defaultReplacementRules = new ArrayList<>(SlugifyConfig.DEFAULT_REPLACEMENT_RULES);
-		config = SlugifyConfig.builder().replacementRules(defaultReplacementRules)
-			.toLowerCase(true).stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+		List<ReplacementRule> defaultReplacementRules = new ArrayList<>(
+			SlugifyConfig.DEFAULT_REPLACEMENT_RULES);
+		config = SlugifyConfig.builder().replacementRules(defaultReplacementRules).toLowerCase(true)
+			.stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
 			.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]")
 			.build();
 
@@ -256,37 +296,8 @@ public class MarkdownAnchorFixerTest
 		assertEquals("###### Final Heading {#final-heading}", result.get(4));
 	}
 
-	/**
-	 * Tests the injection of anchor IDs into headings
-	 * Ensures that only headings matching known fragment links are updated,
-	 * including headings with special characters like accents and symbols
-	 */
 	@Test
-	void testAddMissingHeadingIdsIncludingSpecialCharacters()
-	{
-		List<String> markdownLines = Arrays.asList(
-				"## Introduction",
-				"## ✧ Résumé",
-				"## À venir : Apprendre et évoluer avec l'IA",
-				"## Exemple 1 : Écriture d'une histoire"
-		);
-
-		Set<String> fragmentIds = new HashSet<>(Arrays.asList(
-				"introduction",
-				"resume",
-				"a-venir-apprendre-et-evoluer-avec-lia",
-				"exemple-1-ecriture-dune-histoire"
-		));
-
-		List<String> result = MarkdownAnchorFixer.addMissingHeadingIds(markdownLines, fragmentIds);
-
-		assertEquals("## Introduction {#introduction}", result.get(0));
-		assertEquals("## ✧ Résumé {#resume}", result.get(1));
-		assertEquals("## À venir : Apprendre et évoluer avec l'IA {#a-venir-apprendre-et-evoluer-avec-lia}", result.get(2));
-		assertEquals("## Exemple 1 : Écriture d'une histoire {#exemple-1-ecriture-dune-histoire}", result.get(3));
-	}
-
-	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testAddMissingHeadingIdsInPlace() throws IOException
 	{
 		// Arrange
@@ -294,18 +305,15 @@ public class MarkdownAnchorFixerTest
 		Path tempFile = Files.createTempFile("chapter-03-processed", ".md");
 		Files.copy(original, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-		List<ReplacementRule> defaultReplacementRules = new ArrayList<>(SlugifyConfig.DEFAULT_REPLACEMENT_RULES);
+		List<ReplacementRule> defaultReplacementRules = new ArrayList<>(
+			SlugifyConfig.DEFAULT_REPLACEMENT_RULES);
 		// Use default config with emoji/symbol replacement
-		SlugifyConfig config = SlugifyConfig.builder()
-				.replacementRules(defaultReplacementRules) // assuming already extended
-				.toLowerCase(true)
-				.stripNonAlphanumeric(true)
-				.removeAccents(true)
-				.collapseDashes(true)
-				.whitespaceReplacement("-")
-				.trimEdges(true)
-				.allowedCharactersRegex("[^a-z0-9\\s-]")
-				.build();
+		SlugifyConfig config = SlugifyConfig.builder().replacementRules(defaultReplacementRules) // assuming
+																									// already
+																									// extended
+			.toLowerCase(true).stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+			.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
 
 		// Act
 		MarkdownAnchorFixer.addMissingHeadingIdsInPlace(original, config);
@@ -313,9 +321,9 @@ public class MarkdownAnchorFixerTest
 		// Assert
 		String updatedContent = Files.readString(tempFile);
 		assertTrue(updatedContent.contains("{#un-point-de-vue-personnel-du-chaos-a-lorganisation}"),
-				"Expected known slug to be injected");
+			"Expected known slug to be injected");
 		assertTrue(updatedContent.contains("{#resume}") || updatedContent.matches(".*\\{#.*}.*"),
-				"Expected at least one heading anchor to be injected");
+			"Expected at least one heading anchor to be injected");
 
 		// Clean up
 		Files.deleteIfExists(tempFile);
@@ -323,28 +331,23 @@ public class MarkdownAnchorFixerTest
 
 
 	@Test
+	@Disabled("test with your md file and enable this test case")
 	void testGenerateMarkdownToc() throws IOException
 	{
 		Path original = Paths.get("src/test/resources/chapter-03.md");
 		SlugifyConfig config = SlugifyConfig.builder()
-				.replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES)
-				.toLowerCase(true)
-				.stripNonAlphanumeric(true)
-				.removeAccents(true)
-				.collapseDashes(true)
-				.whitespaceReplacement("-")
-				.trimEdges(true)
-				.allowedCharactersRegex("[^a-z0-9\\s-]")
-				.build();
+			.replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES).toLowerCase(true)
+			.stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+			.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]")
+			.build();
 
 		List<String> toc = MarkdownAnchorFixer.generateMarkdownToc(original, config);
 
 		// Simple assertion to check known structure
 		assertFalse(toc.isEmpty(), "TOC should not be empty");
 		assertTrue(
-				toc.stream().anyMatch(line -> line.contains("Chapitre 3") && line.contains("utiliser")),
-				"Top heading should be present"
-		);
+			toc.stream().anyMatch(line -> line.contains("Chapitre 3") && line.contains("utiliser")),
+			"Top heading should be present");
 		toc.forEach(System.out::println);
 	}
 

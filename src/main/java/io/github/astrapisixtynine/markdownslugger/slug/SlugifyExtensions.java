@@ -115,8 +115,7 @@ public class SlugifyExtensions
 			slug = Normalizer.normalize(slug, Normalizer.Form.NFD);
 			slug = Normalizer.normalize(slug, Normalizer.Form.NFD)
 				.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-			slug = Normalizer.normalize(slug, Normalizer.Form.NFD)
-					.replaceAll("\\p{M}", "");
+			slug = Normalizer.normalize(slug, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
 			// Extra step: remove all non-ASCII characters (e.g. ✧, ❤, ★)
 			slug = slug.replaceAll("[^\\p{ASCII}]", "");
 		}

@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.github.astrapisixtynine.markdownslugger.slug.DefaultSlugStrategy;
@@ -161,7 +162,7 @@ class MarkdownProcessorTest
 	 *             if file reading fails
 	 */
 	@Test
-	// @Disabled("test with your md file and enable this test case")
+	@Disabled("test with your md file and enable this test case")
 	void testWithSpecificMarkdownFile() throws Exception
 	{
 		Path mdFilePath = Paths.get("src/test/resources/ia_pour_tous_livre.gfm");

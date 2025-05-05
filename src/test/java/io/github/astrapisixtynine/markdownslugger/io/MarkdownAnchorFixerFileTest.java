@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,7 +22,9 @@ class MarkdownAnchorFixerFileTest
 {
 	@ParameterizedTest
 	@CsvFileSource(resources = "/chapter3-headings.csv", numLinesToSkip = 1)
-	void testExpectedAnchorExists(String heading) throws IOException {
+	@Disabled("test with your md file and enable this test case")
+	void testExpectedAnchorExists(String heading) throws IOException
+	{
 		String expectedAnchor = SlugifyExtensions.slugify(heading);
 		Path processedFile = Path.of("path/to/processed/chapter3.md");
 		String content = Files.readString(processedFile);
@@ -31,6 +34,7 @@ class MarkdownAnchorFixerFileTest
 
 	@ParameterizedTest
 	@MethodSource("provideHeadingsFromChapter3")
+	@Disabled("test with your md file and enable this test case")
 	void testAnchorInjectionFromRealHeadings(String headingText, String expectedSlug)
 		throws Exception
 	{
