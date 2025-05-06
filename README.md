@@ -157,11 +157,11 @@ maven {
 Learn how this library was designed and built step-by-step:
 
 *
-✍️ [[⚙️ Build a Java Markdown Library with ChatGPT](https://medium.com/@asterios-raptis/%EF%B8%8F-build-a-java-markdown-library-with-chatgpt-73e71c547dd6)](https://medium.com/@asterios-raptis/%EF%B8%8F-build-a-java-markdown-library-with-chatgpt-73e71c547dd6)
+✍️ [⚙️ Build a Java Markdown Library with ChatGPT](https://medium.com/@asterios-raptis/%EF%B8%8F-build-a-java-markdown-library-with-chatgpt-73e71c547dd6)
 *Discover how the `markdown-slugger` project started with collaborative AI-driven development.*
 
 *
-✍️ [[🧱 From Idea to Code: Implementing File I/O Utilities with Lombok and Clean Markdown Processing](https://medium.com/@asterios-raptis/%EF%B8%8F-from-idea-to-code-implementing-file-i-o-utilities-with-lombok-and-a-clean-markdown-processing-a4e528b1db45)](https://medium.com/@asterios-raptis/%EF%B8%8F-from-idea-to-code-implementing-file-i-o-utilities-with-lombok-and-a-clean-markdown-processing-a4e528b1db45)
+✍️ [🧱 From Idea to Code: Implementing File I/O Utilities with Lombok and Clean Markdown Processing](https://medium.com/@asterios-raptis/%EF%B8%8F-from-idea-to-code-implementing-file-i-o-utilities-with-lombok-and-a-clean-markdown-processing-a4e528b1db45)
 *Explore how file processing, heading injection, and clean architecture were implemented using modern Java practices.*
 
 ---
