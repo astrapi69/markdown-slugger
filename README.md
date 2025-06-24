@@ -14,14 +14,22 @@
 # markdown-slugger
 
 **markdown-slugger** is a lightweight and extensible Java library for processing Markdown files.
-It extracts headings, generates URL-friendly slugs, builds nested Tables of Contents (TOC), and injects anchor IDs for compatibility with tools like Pandoc and EPUB.
+It extracts headings, generates URL-friendly slugs, builds nested Tables of Contents (TOC), and injects anchor IDs for
+compatibility with tools like Pandoc and EPUB.
+
+### ✨ New Features
+
+* 🧠 `addMissingHeadingIdsInPlace` automatically adds `{#...}` fragments in-place to any Markdown file
+* 🔍 `generateMarkdownToc` builds a nested TOC structure with slugified anchors
+* 🪄 `generateMarkdownTocWithoutRegex` for performance-optimized TOC generation using plain text parsing
+* 🧪 Fine-grained test coverage including single-line slug injection testing
 
 The current version includes core functionality with packages:
-- `core` – for the processor and context
-- `pipeline` – for modular processing steps
-- `slug` – for configurable slugification logic
 
-More features (e.g. file I/O, CLI, HTML export) will come in future releases.
+* `core` – for the processor and context
+* `pipeline` – for modular processing steps
+* `slug` – for configurable slugification logic
+* `io` – for file utilities and TOC/anchor operations
 
 📚 [Usage documentation is available on the wiki »](https://github.com/astrapi69/markdown-slugger/wiki)
 
@@ -37,18 +45,45 @@ More features (e.g. file I/O, CLI, HTML export) will come in future releases.
 Here’s a short snippet to generate a TOC from a Markdown string:
 
 ```java
-SlugifyConfig config = new SlugifyConfig(
-    Map.of("ü", "ue", "ä", "ae"), true, true, "-", true, true, true, "[^a-z0-9\s-]"
-);
-
-SlugStrategy slugStrategy = new DefaultSlugStrategy(config);
-MarkdownProcessor processor = MarkdownProcessor.defaultPipeline(slugStrategy);
+SlugifyConfig config = SlugifyConfig.builder()
+        .replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES)
+        .toLowerCase(true)
+        .stripNonAlphanumeric(true)
+        .removeAccents(true)
+        .collapseDashes(true)
+        .whitespaceReplacement("-")
+        .trimEdges(true)
+        .allowedCharactersRegex("[^a-z0-9\\s-]")
+        .build();
 
 MarkdownContext context = new MarkdownContext();
-context.originalContent = Files.readString(Path.of("README.md"));
-processor.process(context);
+context.originalContent =Files.
 
-System.out.println(context.toc);
+readString(Path.of("README.md"));
+        MarkdownProcessor.
+
+defaultPipeline(config).
+
+process(context);
+
+System.out.
+
+println(context.toc);
+```
+
+To fix headings in a file:
+
+```java
+MarkdownAnchorFixer.addMissingHeadingIdsInPlace(Paths.get("chapter-04.md"),config);
+```
+
+To extract TOC:
+
+```java
+List<String> toc = MarkdownAnchorFixer.generateMarkdownToc(Paths.get("chapter-04.md"), config);
+toc.
+
+forEach(System.out::println);
 ```
 
 ---
@@ -88,6 +123,7 @@ implementation(libs.markdown.slugger)
 ### Maven dependency
 
 ```xml
+
 <dependency>
     <groupId>io.github.astrapi69</groupId>
     <artifactId>markdown-slugger</artifactId>
@@ -116,44 +152,37 @@ maven {
 
 ---
 
-## Roadmap
+## 📚 Articles & Tutorials
 
-- [x] Slug generation with flexible config
-- [x] Heading extraction and level tracking
-- [x] Markdown TOC generation
-- [x] Anchor ID injection (for Pandoc/EPUB compatibility)
-- [x] File I/O utilities [Issue: Add reusable File I/O utilities for markdown processing](https://github.com/astrapi69/markdown-slugger/issues/1)
-- [ ] CLI interface [Issue: Add CLI tool for processing markdown files](https://github.com/astrapi69/markdown-slugger/issues/2)
-- [ ] HTML anchor inspection [Issue: HTML anchor inspection for broken internal links](https://github.com/astrapi69/markdown-slugger/issues/3)
-- [ ] Custom slug presets (GitHub/Pandoc) [Issue: Support custom slug presets (GitHub/Pandoc/etc)](https://github.com/astrapi69/markdown-slugger/issues/4)
+Learn how this library was designed and built step-by-step:
+
+*
+✍️ [⚙️ Build a Java Markdown Library with ChatGPT](https://medium.com/@asterios-raptis/%EF%B8%8F-build-a-java-markdown-library-with-chatgpt-73e71c547dd6)
+*Discover how the `markdown-slugger` project started with collaborative AI-driven development.*
+
+*
+✍️ [🧱 From Idea to Code: Implementing File I/O Utilities with Lombok and Clean Markdown Processing](https://medium.com/@asterios-raptis/%EF%B8%8F-from-idea-to-code-implementing-file-i-o-utilities-with-lombok-and-a-clean-markdown-processing-a4e528b1db45)
+*Explore how file processing, heading injection, and clean architecture were implemented using modern Java practices.*
 
 ---
 
-📂 File I/O Utilities
+## Roadmap
 
-The MarkdownFileUtils class provides reusable methods for working with Markdown files:
+* [x] Slug generation with flexible config
+* [x] Heading extraction and level tracking
+* [x] Markdown TOC generation
+* [x] Anchor ID injection (for Pandoc/EPUB compatibility)
+* [x] File I/O utilities with in-place
+  replacement[Issue: Add reusable File I/O utilities for markdown processing](https://github.com/astrapi69/markdown-slugger/issues/1)
+* [x] Regex-free TOC/heading processing
+- [ ] CLI
+  interface [Issue: Add CLI tool for processing markdown files](https://github.com/astrapi69/markdown-slugger/issues/2)
+- [ ] HTML anchor
+  inspection [Issue: HTML anchor inspection for broken internal links](https://github.com/astrapi69/markdown-slugger/issues/3)
+- [ ] Custom slug presets (
+  GitHub/Pandoc) [Issue: Support custom slug presets (GitHub/Pandoc/etc)](https://github.com/astrapi69/markdown-slugger/issues/4)
 
-✅ Features
-
-* readLines(Path) – Reads a Markdown file into a list of strings
-* writeLines(Path, List<String>) – Writes a list of strings to a file
-* fileExists(Path) – Checks if a file exists
-* listMarkdownFiles(Path dir) – Lists all .md files in a directory
-* createBackup(Path) – Creates a .bak file before changes
-* writeToFile(Path, List<String>, boolean dryRun) – Writes content, optionally in dry-run mode
-* processAndWriteMarkdown(Path input, Path output, boolean dryRun) – End-to-end processing (e.g., for anchor injection)
-
-🧪 Example Usage
-```java
-Path input = Paths.get("README.md");
-Path output = Paths.get("README_fixed.md");
-
-// Perform a dry-run preview (no file will be written)
-MarkdownFileUtils.processAndWriteMarkdown(input, output, true);
-
-// Write changes to disk (with anchor injection)
-MarkdownFileUtils.processAndWriteMarkdown(input, output, false);
-```
+---
 
 ## License
 
@@ -165,7 +194,7 @@ markdown-slugger is released under the [MIT License](https://opensource.org/lice
 
 If this library saves you time or you like it, consider supporting via:
 
-- [PayPal 💖](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVBTWLRAZ7HB8)
+* [PayPal 💖](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GVBTWLRAZ7HB8)
 
 ---
 
@@ -173,9 +202,9 @@ If this library saves you time or you like it, consider supporting via:
 
 Pull requests, bug reports, and stars are always welcome!
 
-- [Create an Issue](https://github.com/astrapi69/markdown-slugger/issues)
-- [Fork the repo](https://github.com/astrapi69/markdown-slugger/fork)
-- [Submit a Pull Request](https://github.com/astrapi69/markdown-slugger/pull/new/develop)
+* [Create an Issue](https://github.com/astrapi69/markdown-slugger/issues)
+* [Fork the repo](https://github.com/astrapi69/markdown-slugger/fork)
+* [Submit a Pull Request](https://github.com/astrapi69/markdown-slugger/pull/new/develop)
 
 Don't forget to add unit tests when you contribute 🧪
 
@@ -184,8 +213,9 @@ Don't forget to add unit tests when you contribute 🧪
 ## Credits
 
 Huge thanks to:
-- [Sonatype OSS](https://oss.sonatype.org) for hosting
-- [Javadoc.io](https://javadoc.io) for documentation support
-- [Codecov](https://codecov.io) for coverage tracking
+
+* [Sonatype OSS](https://oss.sonatype.org) for hosting
+* [Javadoc.io](https://javadoc.io) for documentation support
+* [Codecov](https://codecov.io) for coverage tracking
 
 ---
