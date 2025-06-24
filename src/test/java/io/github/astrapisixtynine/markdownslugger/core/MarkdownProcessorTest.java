@@ -186,7 +186,7 @@ class MarkdownProcessorTest
 		assertTrue(context.getOriginalContent().contains("{#"),
 			"Modified content should include anchor IDs");
 
-		Path tocPath = Paths.get("src/test/resources/toc.md");
+		Path tocPath = Paths.get("src/test/resources/toc_gen.md");
 		Files.createDirectories(tocPath.getParent()); // make sure the directory exists
 		Files.writeString(tocPath, context.getToc());
 	}
