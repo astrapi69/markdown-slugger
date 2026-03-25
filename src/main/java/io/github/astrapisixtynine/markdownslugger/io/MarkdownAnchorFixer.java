@@ -104,6 +104,23 @@ public class MarkdownAnchorFixer
 	 */
 	public static List<String> addMissingHeadingIds(List<String> lines, Collection<String> ids)
 	{
+		return addMissingHeadingIds(lines, ids, SlugifyConfig.DEFAULT_CONFIG);
+	}
+
+	/**
+	 * Adds missing anchor IDs to headings that are referenced by links but do not yet have an ID
+	 *
+	 * @param lines
+	 *            the original Markdown lines
+	 * @param ids
+	 *            the set of fragment IDs that should exist
+	 * @param config
+	 *            the slugify configuration used to normalize the heading text for comparison
+	 * @return a list of lines with missing heading IDs injected where appropriate
+	 */
+	public static List<String> addMissingHeadingIds(List<String> lines, Collection<String> ids,
+		SlugifyConfig config)
+	{
 		List<String> result = new ArrayList<>();
 		Pattern headingPattern = Pattern.compile("^(#{1,6})\\s+(.*)$");
 
@@ -113,7 +130,7 @@ public class MarkdownAnchorFixer
 			if (matcher.matches())
 			{
 				String headingText = matcher.group(2);
-				String slug = SlugifyExtensions.slugify(headingText);
+				String slug = SlugifyExtensions.slugify(headingText, config);
 				if (ids.contains(slug) && !line.contains("{#"))
 				{
 					line += " {#" + slug + "}";

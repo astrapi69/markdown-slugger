@@ -24,6 +24,7 @@
  */
 package io.github.astrapisixtynine.markdownslugger.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.astrapisixtynine.markdownslugger.pipeline.AnchorIdInjector;
@@ -64,7 +65,9 @@ public class MarkdownProcessor
 	 */
 	public MarkdownProcessor addStep(MarkdownProcessingStep step)
 	{
-		steps.add(step);
+		List<MarkdownProcessingStep> mutableSteps = new ArrayList<>(steps);
+		mutableSteps.add(step);
+		this.steps = mutableSteps;
 		return this;
 	}
 

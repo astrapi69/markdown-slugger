@@ -38,9 +38,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import io.github.astrapisixtynine.markdownslugger.slug.ReplacementRule;
 import io.github.astrapisixtynine.markdownslugger.slug.SlugifyConfig;
@@ -186,8 +190,6 @@ public class MarkdownAnchorFixerTest
 			.build();
 
 		String slug = SlugifyExtensions.slugify(heading, config);
-
-		System.out.println("Slug: " + slug);
 
 		assertEquals("un-point-de-vue-personnel-du-chaos-a-lorganisation", slug);
 	}
@@ -349,6 +351,140 @@ public class MarkdownAnchorFixerTest
 			toc.stream().anyMatch(line -> line.contains("Chapitre 3") && line.contains("utiliser")),
 			"Top heading should be present");
 		toc.forEach(System.out::println);
+	}
+
+	// -------------------------------------------------------------------------
+	// Parameterized tests
+	// -------------------------------------------------------------------------
+
+	private static final SlugifyConfig STRICT_CONFIG = SlugifyConfig.builder()
+		.replacementRules(SlugifyConfig.DEFAULT_REPLACEMENT_RULES).toLowerCase(true)
+		.stripNonAlphanumeric(true).removeAccents(true).collapseDashes(true)
+		.whitespaceReplacement("-").trimEdges(true).allowedCharactersRegex("[^a-z0-9\\s-]").build();
+
+	/**
+	 * Provides test cases for {@link MarkdownAnchorFixer#addMissingHeadingIdToLine}: line →
+	 * expected result line with or without injected anchor
+	 */
+	static Stream<Arguments> provideAddMissingHeadingIdToLineCases()
+	{
+		return Stream.of(
+			// All six heading levels get anchor injected
+			Arguments.of("# Title One", "# Title One {#title-one}"),
+			Arguments.of("## Getting Started", "## Getting Started {#getting-started}"),
+			Arguments.of("### Installation", "### Installation {#installation}"),
+			Arguments.of("#### Configuration", "#### Configuration {#configuration}"),
+			Arguments.of("##### Advanced", "##### Advanced {#advanced}"),
+			Arguments.of("###### Reference", "###### Reference {#reference}"),
+			// Heading with numbers
+			Arguments.of("## Chapter 42", "## Chapter 42 {#chapter-42}"),
+			// Already-anchored heading must NOT be modified
+			Arguments.of("## Already Anchored {#my-id}", "## Already Anchored {#my-id}"),
+			// Non-heading lines pass through unchanged
+			Arguments.of("Plain text", "Plain text"), Arguments.of("- list item", "- list item"),
+			Arguments.of("", ""),
+			// Heading with accented char: é→e via DEFAULT_REPLACEMENT_RULES + stripNonAlpha
+			Arguments.of("### ✎ Exemple 1 : Élargir son vocabulaire",
+				"### ✎ Exemple 1 : Élargir son vocabulaire {#exemple-1-elargir-son-vocabulaire}"),
+			// French heading with colon and apostrophe
+			Arguments.of("# Chapitre 4: Apprentissage et développement des compétences avec l'IA",
+				"# Chapitre 4: Apprentissage et développement des compétences avec l'IA {#chapitre-4-apprentissage-et-developpement-des-competences-avec-lia}"));
+	}
+
+	@ParameterizedTest(name = "[{index}] \"{0}\" \u2192 \"{1}\"")
+	@MethodSource("provideAddMissingHeadingIdToLineCases")
+	void testAddMissingHeadingIdToLineParameterized(String line, String expected)
+	{
+		assertEquals(expected, MarkdownAnchorFixer.addMissingHeadingIdToLine(line, STRICT_CONFIG));
+	}
+
+	/**
+	 * Provides test cases for {@link MarkdownAnchorFixer#extractFragmentLinks}: lines → expected
+	 * set of fragment IDs
+	 */
+	static Stream<Arguments> provideExtractFragmentLinksCases()
+	{
+		return Stream.of(
+			// Single link
+			Arguments.of(List.of("- [Introduction](#introduction)"), Set.of("introduction")),
+			// Multiple links on separate lines
+			Arguments.of(
+				List.of("- [Intro](#intro)", "- [Setup](#getting-started)", "No link here"),
+				Set.of("intro", "getting-started")),
+			// Inline links with hyphens
+			Arguments.of(List.of("[Click here](#my-anchor-id)"), Set.of("my-anchor-id")),
+			// No links in content
+			Arguments.of(List.of("Just plain text", "# Heading"), Set.of()),
+			// Duplicate links: Set deduplicates
+			Arguments.of(List.of("[A](#same)", "[B](#same)"), Set.of("same")),
+			// External URL is NOT a fragment link
+			Arguments.of(List.of("[External](https://example.com)"), Set.of()));
+	}
+
+	@ParameterizedTest(name = "[{index}] extractFragmentLinks")
+	@MethodSource("provideExtractFragmentLinksCases")
+	void testExtractFragmentLinksParameterized(List<String> lines, Set<String> expectedIds)
+	{
+		Set<String> actual = MarkdownAnchorFixer.extractFragmentLinks(lines);
+		assertEquals(expectedIds, actual);
+	}
+
+	/**
+	 * Provides test cases for {@link MarkdownAnchorFixer#convertToFragmentIds}: heading text list →
+	 * expected slug list
+	 */
+	static Stream<Arguments> provideConvertToFragmentIdsCases()
+	{
+		return Stream.of(
+			// Simple headings
+			Arguments.of(List.of("Introduction"), STRICT_CONFIG, List.of("introduction")),
+			Arguments.of(List.of("Getting Started"), STRICT_CONFIG, List.of("getting-started")),
+			// Multiple headings
+			Arguments.of(List.of("Alpha", "Beta", "Gamma"), STRICT_CONFIG,
+				List.of("alpha", "beta", "gamma")),
+			// Headings with accents
+			Arguments.of(List.of("Café au lait"), STRICT_CONFIG, List.of("cafe-au-lait")),
+			// Empty list returns empty
+			Arguments.of(List.of(), STRICT_CONFIG, List.of()),
+			// Null list returns empty
+			Arguments.of(null, STRICT_CONFIG, List.of()));
+	}
+
+	@ParameterizedTest(name = "[{index}] convertToFragmentIds")
+	@MethodSource("provideConvertToFragmentIdsCases")
+	void testConvertToFragmentIdsParameterized(List<String> headings, SlugifyConfig config,
+		List<String> expected)
+	{
+		List<String> actual = MarkdownAnchorFixer.convertToFragmentIds(headings, config);
+		assertEquals(expected, actual);
+	}
+
+	/**
+	 * Provides test cases for {@link MarkdownAnchorFixer#addMissingHeadingIds(List, Collection)}:
+	 * verifies that only headings matching known fragment IDs receive an anchor
+	 */
+	static Stream<Arguments> provideAddMissingHeadingIdsCases()
+	{
+		return Stream.of(
+			// Matched heading gets anchor
+			Arguments.of(List.of("## Introduction"), Set.of("introduction"),
+				"## Introduction {#introduction}"),
+			// Heading not in IDs set: unchanged
+			Arguments.of(List.of("## Other"), Set.of("introduction"), "## Other"),
+			// Already anchored: unchanged
+			Arguments.of(List.of("## Introduction {#introduction}"), Set.of("introduction"),
+				"## Introduction {#introduction}"),
+			// Non-heading line: unchanged regardless of ids
+			Arguments.of(List.of("Some text."), Set.of("some-text"), "Some text."));
+	}
+
+	@ParameterizedTest(name = "[{index}] addMissingHeadingIds")
+	@MethodSource("provideAddMissingHeadingIdsCases")
+	void testAddMissingHeadingIdsParameterized(List<String> lines, Set<String> ids,
+		String expectedFirstLine)
+	{
+		List<String> result = MarkdownAnchorFixer.addMissingHeadingIds(lines, ids);
+		assertEquals(expectedFirstLine, result.get(0));
 	}
 
 }
