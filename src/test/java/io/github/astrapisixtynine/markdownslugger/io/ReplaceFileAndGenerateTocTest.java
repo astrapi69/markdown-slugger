@@ -24,7 +24,7 @@ public class ReplaceFileAndGenerateTocTest
 	@Disabled("test with your md file and enable this test case")
 	void testAddMissingHeadingIdsInPlace() throws IOException
 	{
-		String chapterNumber = "epilogue";
+		String chapterNumber = "die-geister-der-zeit_ebook";
 		String markdownFilename = "" + chapterNumber + ".md";
 		String tocFilename = "toc-" + chapterNumber + ".md";
 

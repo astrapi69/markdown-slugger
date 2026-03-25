@@ -76,6 +76,8 @@ public class SlugifyConfig
 
 		new ReplacementRule("ç", "c", false), new ReplacementRule("Ç", "C", false),
 
+		new ReplacementRule("ß", "ss", false),
+
 		// Emojis and symbols (replaced with "")
 		new ReplacementRule("✅", "", false), new ReplacementRule("✨", "", false),
 		new ReplacementRule("🧠", "", false), new ReplacementRule("📌", "", false),

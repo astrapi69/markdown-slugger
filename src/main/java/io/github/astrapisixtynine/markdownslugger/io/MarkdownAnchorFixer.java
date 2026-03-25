@@ -179,7 +179,7 @@ public class MarkdownAnchorFixer
 		List<String> headings = extractHeadingsWithoutHashes(path);
 		List<String> toFragmentIds = convertToFragmentIds(headings, config);
 		Set<String> fragmentIds = new HashSet<>(toFragmentIds);
-		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds);
+		List<String> result = addMissingHeadingIds(markdownLines, fragmentIds, config);
 		return String.join(System.lineSeparator(), result);
 	}
 
@@ -260,7 +260,7 @@ public class MarkdownAnchorFixer
 				}
 
 				int level = hashes.length();
-				String indentation = "    ".repeat(level - 1);
+				String indentation = "  ".repeat(level - 1);
 				toc.add(String.format("%s- [%s](#%s)", indentation, fullHeadingText, slug));
 			}
 		}
@@ -351,7 +351,7 @@ public class MarkdownAnchorFixer
 				slug = MarkdownAnchorFixer.convertToFragmentIds(List.of(text), config).get(0);
 			}
 
-			String indentation = "    ".repeat(level - 1);
+			String indentation = "  ".repeat(level - 1);
 			toc.add(String.format("%s- [%s](#%s)", indentation, text, slug));
 		}
 		return toc;

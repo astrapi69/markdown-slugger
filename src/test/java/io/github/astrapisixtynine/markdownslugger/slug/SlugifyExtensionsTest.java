@@ -68,7 +68,7 @@ class SlugifyExtensionsTest
 			Arguments.of("🚀 Launch", "launch"),
 			// German umlauts replaced via DEFAULT_REPLACEMENT_RULES (ß NOT in rules → stays)
 			Arguments.of("Über den Wolken", "uber-den-wolken"),
-			Arguments.of("Schöne Grüße", "schone-gruße"));
+			Arguments.of("Schöne Grüße", "schone-grusse"));
 	}
 
 	@ParameterizedTest(name = "[{index}] \"{0}\" \u2192 \"{1}\"")
