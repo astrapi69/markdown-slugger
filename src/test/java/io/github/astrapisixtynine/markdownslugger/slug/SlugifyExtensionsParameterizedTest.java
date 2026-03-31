@@ -38,7 +38,7 @@ import io.github.astrapisixtynine.markdownslugger.test.object.factory.TestObject
 /**
  * Parameterized unit tests for {@link SlugifyExtensions}
  */
-class SlugifyExtensionsTest
+class SlugifyExtensionsParameterizedTest
 {
 
 	/** Strict config: accent removal + stripping of non-alphanumeric characters */
